@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mongo:
+    image: currentone
+    container_name: currentone
+    env_file:
+      - ./.env
+    ports:
+      - '8000:27017'
