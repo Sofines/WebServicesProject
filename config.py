@@ -11,7 +11,7 @@ class Config:
     tasks_collection = db["tasks"]
     users_collection = db["users"]
 
-    CLIENT_ORIGIN= ["http://localhost:8000"]
+    CLIENT_ORIGIN= ["http://localhost:3000"]
     
 
 

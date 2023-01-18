@@ -30,35 +30,35 @@ async def get_user_by_username(username: str) -> Dict[str, Any]:
     user = users_collection.find_one({"username": username})
     return user
 
-def update_user(user_id: str, updated_user: dict):
+async def update_user(user_id: str, updated_user: dict):
     users_collection = db["users"]
     result = users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": updated_user})
     return result.modified_count
 
-def remove_user(user_id: str):
+async def remove_user(user_id: str):
     users_collection = db["users"]
     result = users_collection.delete_one({"_id": ObjectId(user_id)})
     return result.deleted_count
 
 #-----------------------------------------------------------------------------
 
-def create_task(task: dict):
+async def create_task(task: dict):
     db = connect_to_db()
     tasks_collection = db.tasks
     tasks_collection.insert_one(task)
 
-def get_tasks(owner_id: str):
+async def get_tasks(owner_id: str):
     db = connect_to_db()
     tasks_collection = db.tasks
     tasks = tasks_collection.find({"owner_id": owner_id})
     return tasks
 
-def update_task(task_id:str, task: dict):
+async def update_task(task_id:str, task: dict):
     db = connect_to_db()
     tasks_collection = db.tasks
     tasks_collection.update_one({"_id": task_id}, {"$set": task})
 
-def delete_task(task_id: str):
+async def delete_task(task_id: str):
     db = connect_to_db()
     tasks_collection = db.tasks
     tasks_collection.delete_one({"_id": task_id})
