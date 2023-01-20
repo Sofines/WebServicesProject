@@ -1,6 +1,10 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from bson.objectid import ObjectId as ObjectId
+from bson.errors import InvalidId
+from typing import Any
+
+
 
 
 class TaskCreate(BaseModel):
@@ -13,10 +17,13 @@ class TaskUpdate(BaseModel):
     status: str
 
 class UserCreate(BaseModel):
-    email: str
-    password: str
-    is_active: bool
-    is_superuser: bool
+    email: EmailStr
+    first_name: str
+    last_name: str
+    created_at: datetime = None
+    updated_at: datetime = None
+    class Config:
+        allow_mutation = True
 
 class UserUpdate(BaseModel):
     username: str = None
@@ -36,3 +43,24 @@ class User(BaseModel):
     last_name: str
     created_at: datetime
     updated_at: datetime
+
+def valid_oid(value: Any) -> ObjectId:
+    try:
+        return ObjectId(value)
+    except InvalidId:
+        raise
+
+
+class UserId(BaseModel):
+    id: ObjectId
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class UserData(BaseModel):
+    email: EmailStr
+    first_name: str
+    last_name: str
+    created_at: datetime
+    updated_at: datetime
+
