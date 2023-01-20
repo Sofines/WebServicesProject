@@ -3,6 +3,7 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from typing import Dict, Any
 from pydantic import BaseModel
+from pydantic import EmailStr
 
 
 client = MongoClient("mongodb://localhost:27017/")
@@ -11,19 +12,18 @@ tasks_collection = db["tasks"]
 users_collection = db["users"]
 
 class User(BaseModel):
-    username: str
-    email: str
-    password: str
-    full_name: str
-    disabled: bool = False
+    email: EmailStr
+    first_name: str
+    last_name: str
+    created_at: datetime
+    updated_at: datetime
 
 def connect_to_db():
     return db
 #---------------------------------------------------------------------------------------------------
-async def create_user(user: Dict[str, Any]) -> None:
-    # Insert the user into the users collection
+async def create_user(user: Dict[str, Any]) -> ObjectId:
     result = users_collection.insert_one(user)
-    print(f"Inserted user with id: {result.inserted_id}")
+    return result.inserted_id
 
 async def get_user_by_username(username: str) -> Dict[str, Any]:
     # Find the user with the matching username

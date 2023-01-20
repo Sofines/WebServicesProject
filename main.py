@@ -4,8 +4,9 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from auth import authenticate_user, Token
 from datetime import datetime
 from bson.objectid import ObjectId as ObjectId
-from model import TaskCreate, TaskUpdate, UserCreate, UserUpdate, User
+from model import TaskCreate, TaskUpdate, UserCreate, UserUpdate, User, UserId, UserData
 from typing import List
+from email_validator import validate_email, EmailNotValidError
 from database import tasks_collection, users_collection
 from database import db
 from database import (
@@ -29,7 +30,7 @@ origins = [
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "Tasnim"}
 
 @app.post("/tasks")
 async def create_task(task: TaskCreate= Body(...)):
@@ -60,8 +61,16 @@ async def delete_task(task_id:str):
 #post_method_user
 @app.post("/users/", response_model=UserCreate)
 async def create_user(user: UserCreate):
-    user_data = user.dict()
-    user_id = await create_user(user_data)
+    user.created_at = datetime.now()
+    user.updated_at = datetime.now()
+    try:
+        v = validate_email(user.email)  # validate and get info
+        email = v["email"]  # replace with normalized form
+    except EmailNotValidError as e:
+        # email is not valid, exception message is human-readable
+        raise ValueError(str(e))
+    
+    user_id = await create_user(user)
     if not user_id:
         raise HTTPException(status_code=400, detail="Could not create user.")
     return {"user_id": user_id}
